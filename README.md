@@ -1,0 +1,1 @@
+# syakyo_single_web_page_application
