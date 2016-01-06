@@ -14,12 +14,8 @@
 
 var spa = (function(){
     var initModule = function( $container ){
-        $container.html(
-            '<h1 sytle="display:inline-block; margin:25px;">'
-            + 'Hello world!'
-            + '</h1>'
-        );
+        spa.shell.initModule($container);
     };
     
-    return { initModule: initModule};
+    return { initModule: initModule };
 }());
