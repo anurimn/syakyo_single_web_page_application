@@ -45,10 +45,10 @@ spa.shell = (function(){
         // モジュール全体で共有する動的情報をstateMapに配置
         stateMap = { 
             $container: null,
-            // toggleChatメソッドで使用するため、is_chat_retracedを追加
+            // toggleChatメソッドで使用するため、is_chat_retractedを追加
             // 使用しているすべてのキーをstateMapに列挙することで、
             // 簡単に見つけることができるようにしている
-            is_chat_retraced: true
+            is_chat_retracted: true
         },
         // jqueryMapに、jQueryコレクションをキャッシュ
         jqueryMap = {},
@@ -125,7 +125,7 @@ spa.shell = (function(){
                         jqueryMap.$chat.attr(
                             'title', configMap.chat_extended_title
                         );
-                        stateMap.is_chat_retraced = false;
+                        stateMap.is_chat_retracted = false;
                         
                         // アニメーション終了時にコールバックを呼び出す
                         if (callback){ callback(jqueryMap.$chat); }
@@ -147,12 +147,13 @@ spa.shell = (function(){
                     jqueryMap.$chat.attr(
                         'title', configMap.chat_retracted_title
                     );
-                    stateMap.is_chat_retraced = true;
+                    stateMap.is_chat_retracted = true;
                     
                     // こちらも、アニメーション終了時にコールバックを呼び出す
                     if (callback){ callback(jqueryMap.$chat); }
                 }
             );
+            return true;
             //-------- チャットスライダーの格納開始
         };
         //-------- DOMメソッド/toggleChat/終了
@@ -161,7 +162,12 @@ spa.shell = (function(){
         // jQueryイベントハンドラ関数のための「イベントハンドラ」セクションを用意する
         // onClickChatイベントハンドラを用意
         onClickChat = function(event){
-            toggleChat(stateMap.is_chat_retraced);
+            if (toggleChat(stateMap.is_chat_retracted)){
+                // jQueryプラグインのuriAnchorを使って、URLのアンカーを変更する
+                $.uriAnchor.setAnchor({
+                    chat: (stateMap.is_chat_retracted ? 'open' : 'closed')
+                });
+            }
             return false;
         };
         //---- イベントハンドラ終了 ----
@@ -177,7 +183,7 @@ spa.shell = (function(){
             setJqueryMap();
             
             // チャットスライダーを初期化し、イベントハンドラをクリックイベントにバインドする
-            stateMap.is_chat_retraced = true;
+            stateMap.is_chat_retracted = true;
             jqueryMap.$chat
                 .attr('title', configMap.chat_retracted_title)
                 .click(onClickChat);
