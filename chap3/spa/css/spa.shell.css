@@ -89,8 +89,18 @@
     right: 0;
     width: 300px;
     height: 15px;
+    /* スライダーの上に来た時にカーソルをポインタに変える */
+    cursor: pointer;
     background: red;
+    /* 角を丸め、スライダーの見栄えを良くする */
+    border-radius: 5px 0 0 0;
     z-index: 1;
+}
+
+/* カーソルがスライダーの上に来たら、スライダーの色を変える */
+/* これにより、クリックすると動きがあるというメッセージをユーザーに示す */
+.spa-shell-chat:hover{
+    background: #a00;
 }
 
 .spa-shell-modal{

@@ -35,17 +35,29 @@ spa.shell = (function(){
             chat_extend_time: 1000,
             chat_retract_time: 300,
             chat_extend_height: 450,
-            chat_retract_height: 15
+            chat_retract_height: 15,
+            
+            // ユーザ動作を促すツールチップテキストを表示するため、
+            // cofingMapに格納と拡大時のタイトルテキストを追加
+            chat_extended_title: 'Click to retract',
+            chat_retracted_title: 'Click to extend'
         },
         // モジュール全体で共有する動的情報をstateMapに配置
-        stateMap = { $container: null },
+        stateMap = { 
+            $container: null,
+            // toggleChatメソッドで使用するため、is_chat_retracedを追加
+            // 使用しているすべてのキーをstateMapに列挙することで、
+            // 簡単に見つけることができるようにしている
+            is_chat_retraced: true
+        },
         // jqueryMapに、jQueryコレクションをキャッシュ
         jqueryMap = {},
         
         // このセクションですべてのモジュールスコープ変数を宣言する
         // その多くはのちに割り当てる
         setJqueryMap, 
-        toggleChat, // モジュールスコープ変数のリストにtoggleChatを追加 
+        toggleChat, // モジュールスコープ変数のリストにtoggleChatを追加
+        onClickChat, // モジュールスコープ関数名のリストに、onClickChatイベントを追加
         initModule;
         
         
@@ -85,6 +97,11 @@ spa.shell = (function(){
         //   * true - スライダーアニメーションが追加された
         //   * false - スライダーアニメーションが開始されなかった
         //
+        // APIドキュメントを更新し、このメソッドでstateMap.is_chat_retracedが
+        // どのように設定されているかを示す
+        // 状態：stateMap.is_chat_retracedを設定する
+        //   * true - スライダーは格納されている
+        //   * false - スライダーは拡大されている
         toggleChat = function(do_extend, callback){
             var
                 px_chat_ht = jqueryMap.$chat.height(),
@@ -102,6 +119,14 @@ spa.shell = (function(){
                     { height: configMap.chat_extend_height },
                     configMap.chat_extend_time,
                     function(){
+                        // ユーザ動作を促すツールチップテキストを表示するため、
+                        // ホバーテキストとstateMap.is_chat_retracted値を制御するよう、
+                        // toggleChatを調整する
+                        jqueryMap.$chat.attr(
+                            'title', configMap.chat_extended_title
+                        );
+                        stateMap.is_chat_retraced = false;
+                        
                         // アニメーション終了時にコールバックを呼び出す
                         if (callback){ callback(jqueryMap.$chat); }
                     }
@@ -116,6 +141,14 @@ spa.shell = (function(){
                 { height: configMap.chat_retract_height },
                 configMap.chat_retract_time,
                 function(){
+                    // こちらも、ユーザ動作を促すツールチップテキストを表示するため、
+                    // ホバーテキストとstateMap.is_chat_retracted値を制御するよう、
+                    // toggleChatを調整する
+                    jqueryMap.$chat.attr(
+                        'title', configMap.chat_retracted_title
+                    );
+                    stateMap.is_chat_retraced = true;
+                    
                     // こちらも、アニメーション終了時にコールバックを呼び出す
                     if (callback){ callback(jqueryMap.$chat); }
                 }
@@ -126,6 +159,11 @@ spa.shell = (function(){
         
         //---- イベントハンドラ開始 ----
         // jQueryイベントハンドラ関数のための「イベントハンドラ」セクションを用意する
+        // onClickChatイベントハンドラを用意
+        onClickChat = function(event){
+            toggleChat(stateMap.is_chat_retraced);
+            return false;
+        };
         //---- イベントハンドラ終了 ----
         
         //---- パブリックメソッド開始 ----
@@ -138,10 +176,17 @@ spa.shell = (function(){
             $container.html(configMap.main_html);
             setJqueryMap();
             
+            // チャットスライダーを初期化し、イベントハンドラをクリックイベントにバインドする
+            stateMap.is_chat_retraced = true;
+            jqueryMap.$chat
+                .attr('title', configMap.chat_retracted_title)
+                .click(onClickChat);
+            
+            
             // 切り替えをテストする
             // ページロードの3秒後にスライダーを拡大し、8秒後に格納する
-            setTimeout(function() { toggleChat(true); }, 3000);
-            setTimeout(function() { toggleChat(false); }, 8000);
+            // setTimeout(function() { toggleChat(true); }, 3000);
+            // setTimeout(function() { toggleChat(false); }, 8000);
         };
         // パブリックメソッド/initModule/終了
         // mapにパブリックメンバを戻すことで、明示的にパブリックメソッドをエクスポートする
