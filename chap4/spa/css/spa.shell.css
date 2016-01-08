@@ -5,7 +5,7 @@
 
 .spa-shell-head, .spa-shell-head-logo, .spa-shell-head-acct,
 .spa-shell-head-search, .spa-shell-main, .spa-shell-main-nav,
-.spa-shell-main-content, .spa-shell-foot, .spa-shell-chat,
+.spa-shell-main-content, .spa-shell-foot, /* .spa-shell-chat, */
 .spa-shell-modal{
     position: absolute;
 }
@@ -84,24 +84,25 @@
     height: 40px;
 }
 
-.spa-shell-chat{
+/* チャットのCSSができたので、関係するものを削除 */
+/*.spa-shell-chat{
     bottom: 0;
     right: 0;
     width: 300px;
-    height: 15px;
+    height: 15px;*/
     /* スライダーの上に来た時にカーソルをポインタに変える */
-    cursor: pointer;
-    background: red;
+    /*cursor: pointer;
+    background: red;*/
     /* 角を丸め、スライダーの見栄えを良くする */
-    border-radius: 5px 0 0 0;
+    /*border-radius: 5px 0 0 0;
     z-index: 1;
-}
+}*/
 
 /* カーソルがスライダーの上に来たら、スライダーの色を変える */
 /* これにより、クリックすると動きがあるというメッセージをユーザーに示す */
-.spa-shell-chat:hover{
+/*.spa-shell-chat:hover{
     background: #a00;
-}
+}*/
 
 .spa-shell-modal{
     margin-top: -200px;
@@ -113,4 +114,6 @@
     background: #fff;
     border-radius: 3px;
     z-index: 2;
+    /* モーダルコンテナを隠して、チャットスライダーの妨げにならないようにする */
+    display: none;
 }
