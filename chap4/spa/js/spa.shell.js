@@ -23,6 +23,7 @@ spa.shell = (function(){
                     closed: true
                 }
             },
+            resize_interval: 200,
             main_html: String()
                 + '<div class="spa-shell-head">'
                     + '<div class="spa-shell-head-logo"></div>'
@@ -50,15 +51,12 @@ spa.shell = (function(){
         },
         
         // モジュール全体で共有する動的情報をstateMapに配置
-        stateMap = { 
-            // $container: null,
+        stateMap = {
+            $container: undefined, 
             // マップの現在のアンカー値を
             // モジュール状態stateMap.anchor_mapに格納する
             anchor_map: {},
-            // toggleChatメソッドで使用するため、is_chat_retractedを追加
-            // 使用しているすべてのキーをstateMapに列挙することで、
-            // 簡単に見つけることができるようにしている
-            // is_chat_retracted: true
+            resize_idto: undefined
         },
         // jqueryMapに、jQueryコレクションをキャッシュ
         jqueryMap = {},
@@ -67,10 +65,9 @@ spa.shell = (function(){
         // その多くはのちに割り当てる
         copyAnchorMap,
         setJqueryMap, 
-        // toggleChat, // モジュールスコープ変数のリストにtoggleChatを追加
         changeAnchorPart,
         onHashchange,
-        // onClickChat, // モジュールスコープ関数名のリストに、onClickChatイベントを追加
+        onResize,
         setChatAnchor,
         initModule;
         //----モジュールスコープ変数終了----
@@ -244,6 +241,21 @@ spa.shell = (function(){
             //-------- スライダーの変更が拒否された場合にアンカーを元に戻す処理を終了
         }
         //-------- イベントハンドラ/onHashchange/終了
+        
+        //-------- イベントハンドラ/onResize/開始
+        onResize = function(){
+            if (stateMap.resize_idto) { return true; }
+            
+            spa.chat.handleResize();
+            stateMap.resize_idto = setTimeout(
+                function(){
+                    stateMap.resize_idto = undefined;
+                },
+                configMap.resize_interval
+            );
+            return true;
+        };
+        //-------- イベントハンドラ/onResize/終了
         //---- イベントハンドラ終了 ----
         
         //---- コールバック開始
@@ -319,6 +331,7 @@ spa.shell = (function(){
             // ->ブックマークが初期ロード状態であるとモジュールがみなすよう、
             //   hashchangeイベントハンドラをバインドしてすぐに発行する
             $(window)
+                .bind('resize', onResize)
                 .bind('hashchange', onHashchange)
                 .trigger('hashchange');
         };
